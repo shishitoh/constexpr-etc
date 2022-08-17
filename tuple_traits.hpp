@@ -1,25 +1,43 @@
+#include <iostream>
 #include <tuple>
-#include <type_traits>
-#include <vector>
 
 namespace tuple_traits {
 
     /* struct homotuple
     第一引数の型を第二引数の数字だけ並べたtuple型を返す
+    繰り返し二乗法で実装
     ex. homotuple<int, 5>
         -> std::tuple<int, int, int, int, int> */
-    template<typename T, std::size_t N, typename... Args>
-    struct homotuple_impl {
-        using type = typename homotuple_impl<T, N-1, Args..., T>::type;
+    template<typename... Args>
+    struct typeholder {};
+
+    template<std::size_t N, bool B, typename S, typename... Args>
+    struct homotuple_impl {};
+
+    template<std::size_t N, typename... pArgs, typename... Args>
+    struct homotuple_impl<N, false, typeholder<pArgs...>, Args...> {
+        using type = typename homotuple_impl<
+            (N>>1), (N&2), typeholder<pArgs..., pArgs...>, Args...>::type;
     };
 
-    template<typename T, typename... Args>
-    struct homotuple_impl<T, 0, Args...> {
-        using type = typename std::tuple<Args...>;
+    template<std::size_t N, typename... pArgs, typename... Args>
+    struct homotuple_impl<N, true, typeholder<pArgs...>, Args...> {
+        using type = typename homotuple_impl<
+            (N>>1), (N&2), typeholder<pArgs..., pArgs...>, Args..., pArgs...>::type;
+    };
+
+    template<typename... pArgs, typename... Args>
+    struct homotuple_impl<1, true, typeholder<pArgs...>, Args...> {
+        using type = std::tuple<Args..., pArgs...>;
+    };
+
+    template<typename... pArgs, typename... Args>
+    struct homotuple_impl<0, false, typeholder<pArgs...>, Args...> {
+        using type = std::tuple<Args...>;
     };
 
     template<typename T, std::size_t N>
-    using homotuple = typename homotuple_impl<T, N>::type;
+    using homotuple = typename homotuple_impl<N, N&1, typeholder<T>>::type;
 
     /* struct tuples_cat
     引数に渡されたtupleを全て結合する
@@ -109,25 +127,52 @@ namespace tuple_traits {
     using swapped_tuple = typename swapped_tuple_impl<T, N, M>::type;
 
     /* darray_to_tuple
-    内部でstd::get<>()を使用するためconstevalであることが必須(だと思われる) */
-    template<typename T, std::size_t N, std::size_t Size>
-    consteval void ddddimpl(homotuple<T, Size> &tuple, const T *ptr) {
-        if constexpr (N < Size) {
-            std::get<N>(tuple) = ptr[N];
-            ddddimpl<T, N+1, Size>(tuple, ptr);
+    dynamic_arrayをtupleに変換する */
+    template<typename T, std::size_t Low, std::size_t High, std::size_t Size>
+    constexpr void darray_to_tuple_impl(homotuple<T, Size> &tuple, const T *ptr) {
+
+        static_assert(Low <= High);
+
+        if constexpr (Low == High) {
+            ;
+        } else if (High - Low == 1) {
+            std::get<Low>(tuple) = ptr[Low];
+        } else {
+            darray_to_tuple_impl<T, Low, (Low+High)/2, Size>(tuple, ptr);
+            darray_to_tuple_impl<T, (Low+High)/2, High, Size>(tuple, ptr);
         }
     }
 
     template<typename T, std::size_t Size>
-    consteval void ddimpl(homotuple<T, Size> &tuple, const T *ptr) {
-        ddddimpl<T, 0, Size>(tuple, ptr);
+    constexpr homotuple<T, Size> darray_to_tuple(const T *ptr) {
+        homotuple<T, Size> tuple;
+        darray_to_tuple_impl<T, 0, Size, Size>(tuple, ptr);
+        return tuple;
     }
 
-    template<typename T, std::size_t Size>
-    consteval homotuple<T, Size> darray_to_tuple(const T *ptr) {
-        homotuple<T, Size> tuple;
-        ddimpl<T, Size>(tuple, ptr);
-        return tuple;
+    /* tupleの中身をostreamで全て出力する */
+    template<std::size_t Low, std::size_t High, typename... Args>
+    void ostream_impl(std::ostream &stream, const std::tuple<Args...> &tuple) {
+        if constexpr (Low+1 > High) {
+            ;
+        } else if (Low+1 == High) {
+            if constexpr (Low == 0) {
+                stream << std::get<Low>(tuple);
+            } else {
+                stream << ", " << std::get<Low>(tuple);
+            }
+        } else {
+            ostream_impl<Low, (Low+High)/2, Args...>(stream, tuple);
+            ostream_impl<(Low+High)/2, High, Args...>(stream, tuple);
+        }
+    }
+
+    template<typename... Args>
+    std::ostream &operator<<(std::ostream &stream, const std::tuple<Args...> &tuple) {
+        stream << "tuple(";
+        ostream_impl<0, sizeof...(Args)>(stream, tuple);
+        stream << ")";
+        return stream;
     }
 }
 
