@@ -3,14 +3,6 @@
 
 #include "../tuple_traits.hpp"
 
-consteval bool check() {
-    using namespace tuple_traits;
-    int *A = new int[5]{3, 1, 4, 1, 5};
-    bool t = darray_to_tuple<int, 5>(A) == std::make_tuple(3, 1, 4, 1, 5);
-    delete[] A;
-    return t;
-}
-
 int main() {
     using namespace tuple_traits;
 
