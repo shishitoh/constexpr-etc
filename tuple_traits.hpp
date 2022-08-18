@@ -127,7 +127,8 @@ namespace tuple_traits {
     using swapped_tuple = typename swapped_tuple_impl<T, N, M>::type;
 
     /* darray_to_tuple
-    dynamic_arrayをtupleに変換する */
+    dynamic_arrayをtupleに変換する
+    二分再帰で実装 */
     template<typename T, std::size_t Low, std::size_t High, std::size_t Size>
     constexpr void darray_to_tuple_impl(homotuple<T, Size> &tuple, const T *ptr) {
 
