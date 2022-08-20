@@ -7,12 +7,12 @@ namespace prime {
 
     /* tuple_sieve */
     template<std::size_t n>
-    struct sieve_flag {
+    struct sieve_flags {
 
         static constexpr std::size_t size = n;
         bool flags[size/2];
 
-        constexpr sieve_flag() {
+        constexpr sieve_flags() {
 
             flags[0] = 0;
             for (std::size_t i = 1; i < size/2; ++i) {
@@ -40,7 +40,7 @@ namespace prime {
     template<std::size_t n>
     constexpr auto tuple_sieve() {
 
-        constexpr sieve_flag<n> flags{};
+        constexpr sieve_flags<n> flags{};
         constexpr std::size_t Size = flags.get_size();
 
         int *P = new int[Size], *p = P;
@@ -56,11 +56,12 @@ namespace prime {
         return tuple;
     }
 
-    constexpr std::size_t modsum(std::size_t a, std::size_t b, std::size_t n) {
-        return (a == 0 || b < -a) ? (a+b) % n : (a+b-n) % n;
+    /* is_prime */
+    constexpr std::size_t modsum(std::size_t a, std::size_t b, std::size_t n) noexcept {
+        return (a == 0 || b < ~a+1) ? (a+b) % n : (a+b-n) % n;
     }
 
-    constexpr std::size_t modprod(std::size_t a, std::size_t b, std::size_t n) {
+    constexpr std::size_t modprod(std::size_t a, std::size_t b, std::size_t n) noexcept {
         std::size_t ret = 0;
         while (b) {
             if (b&1) {
@@ -72,7 +73,7 @@ namespace prime {
         return ret;
     }
 
-    constexpr std::size_t modpow(std::size_t a, std::size_t b, std::size_t n) {
+    constexpr std::size_t modpow(std::size_t a, std::size_t b, std::size_t n) noexcept {
         std::size_t ret = 1;
         while (b) {
             if (b&1) {
@@ -85,7 +86,7 @@ namespace prime {
     }
 
     /* n = 2^s*dを満たす */
-    constexpr bool miller_rabin_core(std::size_t n, std::size_t a, std::size_t s, std::size_t d) {
+    constexpr bool miller_rabin_core(std::size_t n, std::size_t a, std::size_t s, std::size_t d) noexcept {
 
         std::size_t y = modpow(a, d, n);
         if (y == 1) {
@@ -129,7 +130,7 @@ namespace prime {
             A[4] = 11; A[5] = 13; A[6] = 17; As = 7;
        } else {
            /* not implemented */
-            return false;
+           throw std::out_of_range("not implemented for n >= 341,550,071,728,321");
         }
 
         std::size_t d = n-1;

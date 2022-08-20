@@ -136,7 +136,7 @@ namespace tuple_traits {
 
         if constexpr (Low == High) {
             ;
-        } else if (High - Low == 1) {
+        } else if (Low+1 == High) {
             std::get<Low>(tuple) = ptr[Low];
         } else {
             darray_to_tuple_impl<T, Low, (Low+High)/2, Size>(tuple, ptr);
@@ -154,7 +154,10 @@ namespace tuple_traits {
     /* tupleの中身をostreamで全て出力する */
     template<std::size_t Low, std::size_t High, typename... Args>
     void ostream_impl(std::ostream &stream, const std::tuple<Args...> &tuple) {
-        if constexpr (Low+1 > High) {
+
+        static_assert(Low <= High);
+
+        if constexpr (Low == High) {
             ;
         } else if (Low+1 == High) {
             if constexpr (Low == 0) {
