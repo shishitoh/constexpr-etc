@@ -116,7 +116,7 @@ namespace prime {
             As = 2;
         } else if (n < 25326001ULL) {
             As = 3;
-        } else if (n < 118670087467) {
+        } else if (n < 118670087467ULL) {
             As = 4;
         } else if (n < 2152302898747ULL) {
             As = 5;
