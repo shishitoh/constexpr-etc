@@ -58,11 +58,11 @@ namespace tuple_traits {
 
     template<typename... Args1, typename... Args2, typename... Tuples>
     struct tuples_cat_impl<std::tuple<Args1...>, std::tuple<Args2...>, Tuples...> {
-        using type = tuples_cat_impl<std::tuple<Args1..., Args2...>, Tuples...>::type;
+        using type = typename tuples_cat_impl<std::tuple<Args1..., Args2...>, Tuples...>::type;
     };
 
     template<typename... Tuples>
-    using tuples_cat = tuples_cat_impl<Tuples...>::type;
+    using tuples_cat = typename tuples_cat_impl<Tuples...>::type;
 
     /* struct meta_apply
     templateの第一引数のメタ関数にArgs...を適用させたものを返す
@@ -115,7 +115,7 @@ namespace tuple_traits {
 
     template<typename... Args, std::size_t N, std::size_t M>
     struct swapped_tuple_impl<std::tuple<Args...>, N, M> {
-        using type = swapped_tuple_swapping<sizeof...(Args), std::tuple<Args...>, N, M, 0>::type;
+        using type = typename swapped_tuple_swapping<sizeof...(Args), std::tuple<Args...>, N, M, 0>::type;
     };
 
     template<typename... Args, std::size_t N>

@@ -19,7 +19,7 @@ namespace prime {
                 flags[i] = 1;
             }
 
-            for (std::size_t i = 1, j; (j=2*i*i+2*i) < size/2; ++i) {
+            for (std::size_t i = 1, j = 1; (j=2*i*i+2*i) < size/2; ++i) {
                 if (flags[i]) {
                     for (; j < size/2; j+=2*i+1) {
                         flags[j] = 0;
@@ -101,7 +101,7 @@ namespace prime {
         return false;
     }
 
-    constexpr is_prime(std::size_t n) {
+    constexpr bool is_prime(std::size_t n) {
 
         if (n == 2) {
             return true;
@@ -109,27 +109,22 @@ namespace prime {
             return false;
         }
 
-        std::size_t A[7];
-        std::size_t As;
+        std::size_t A[7] = {2, 3, 5, 7, 11, 13, 17};
+        std::size_t As = 1;
 
         if (n < 1373653ULL) {
-            A[0] = 2; A[1] = 3; As = 2;
+            As = 2;
         } else if (n < 25326001ULL) {
-            A[0] = 2; A[1] = 3; A[2] = 5; As = 3;
+            As = 3;
         } else if (n < 118670087467) {
-            A[0] = 2; A[1] = 3; A[2] = 5; A[3] = 7;
             As = 4;
         } else if (n < 2152302898747ULL) {
-            A[0] = 2; A[1] = 3; A[2] = 5; A[3] = 7;
-            A[4] = 11; As = 5;
+            As = 5;
         } else if (n < 3474749660383ULL) {
-            A[0] = 2; A[1] = 3; A[2] = 5; A[3] = 7;
-            A[4] = 11; A[5] = 13; As = 6;
+            As = 6;
         } else if (n < 341550071728321ULL) {
-            A[0] = 2; A[1] = 3; A[2] = 5; A[3] = 7;
-            A[4] = 11; A[5] = 13; A[6] = 17; As = 7;
+            As = 7;
        } else {
-           /* not implemented */
            throw std::out_of_range("not implemented for n >= 341,550,071,728,321");
         }
 
