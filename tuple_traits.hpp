@@ -126,11 +126,11 @@ namespace tuple_traits {
     template<typename T, std::size_t N, std::size_t M>
     using swapped_tuple = typename swapped_tuple_impl<T, N, M>::type;
 
-    /* darray_to_tuple
+    /* array_to_tuple
     dynamic_arrayをtupleに変換する
     二分再帰で実装 */
     template<typename T, std::size_t Low, std::size_t High, std::size_t Size>
-    constexpr void darray_to_tuple_impl(homotuple<T, Size> &tuple, const T *ptr) {
+    constexpr void array_to_tuple_impl(homotuple<T, Size> &tuple, const T *ptr) {
 
         static_assert(Low <= High);
 
@@ -139,15 +139,15 @@ namespace tuple_traits {
         } else if (Low+1 == High) {
             std::get<Low>(tuple) = ptr[Low];
         } else {
-            darray_to_tuple_impl<T, Low, (Low+High)/2, Size>(tuple, ptr);
-            darray_to_tuple_impl<T, (Low+High)/2, High, Size>(tuple, ptr);
+            array_to_tuple_impl<T, Low, (Low+High)/2, Size>(tuple, ptr);
+            array_to_tuple_impl<T, (Low+High)/2, High, Size>(tuple, ptr);
         }
     }
 
     template<typename T, std::size_t Size>
-    constexpr homotuple<T, Size> darray_to_tuple(const T *ptr) {
+    constexpr homotuple<T, Size> array_to_tuple(const T *ptr) {
         homotuple<T, Size> tuple;
-        darray_to_tuple_impl<T, 0, Size, Size>(tuple, ptr);
+        array_to_tuple_impl<T, 0, Size, Size>(tuple, ptr);
         return tuple;
     }
 

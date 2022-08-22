@@ -1,4 +1,5 @@
 #include <tuple>
+#include <algorithm>
 
 #include "tuple_traits.hpp"
 
@@ -43,15 +44,15 @@ namespace prime {
         constexpr sieve_flags<n> flags{};
         constexpr std::size_t Size = flags.get_size();
 
-        int *P = new int[Size], *p = P;
+        int P[Size];
+        int *p = P;
         (*p++) = 2;
         for (std::size_t i = 0; i < n/2; ++i) {
             if (flags.flags[i]) {
                 (*p++) = 2*i+1;
             }
         }
-        auto tuple = darray_to_tuple<int, Size>(P);
-        delete[] P;
+        auto tuple = array_to_tuple<int, Size>(P);
 
         return tuple;
     }
@@ -103,7 +104,7 @@ namespace prime {
 
     constexpr bool is_prime(std::size_t n) {
 
-        if (n == 2) {
+        if (n == 2 || n == 3) {
             return true;
         } else if (n==0 || n==1 || !(n&1)) {
             return false;
@@ -134,15 +135,12 @@ namespace prime {
             ++s;
             d >>= 1;
         }
-        for (std::size_t Ass = 0; Ass < As; ++Ass) {
-            if (A[Ass] >= n) {
-                break;
-            }
-            if (!miller_rabin_core(n, A[Ass], s, d)) {
-                return false;
-            }
-        }
-        return true;
+        return std::all_of(
+            A,
+            A+As,
+            [=](std::size_t a) {
+                return miller_rabin_core(n, a, s, d);
+            });
     }
 }
 

@@ -33,11 +33,11 @@ int main() {
                       >
                   >);
     constexpr int A[5] = {2, 3, 5, 7, 11};
-    static_assert(darray_to_tuple<int, 5>(A) == std::make_tuple(2, 3, 5, 7, 11));
+    static_assert(array_to_tuple<int, 5>(A) == std::make_tuple(2, 3, 5, 7, 11));
     static_assert([]() {
                       int *A = new int[5]{3, 1, 4, 1, 5};
                       A[1] = 10;
-                      homotuple<int, 5> t = darray_to_tuple<int, 5>(A);
+                      homotuple<int, 5> t = array_to_tuple<int, 5>(A);
                       delete[] A;
                       return t;
                   }() == std::make_tuple(3, 10, 4, 1, 5));
