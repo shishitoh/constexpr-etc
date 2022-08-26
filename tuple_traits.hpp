@@ -27,11 +27,6 @@ namespace tuple_traits {
     };
 
     template<typename... pArgs, typename... Args>
-    struct homotuple_impl<1, true, typeholder<pArgs...>, Args...> {
-        using type = std::tuple<Args..., pArgs...>;
-    };
-
-    template<typename... pArgs, typename... Args>
     struct homotuple_impl<0, false, typeholder<pArgs...>, Args...> {
         using type = std::tuple<Args...>;
     };

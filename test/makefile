@@ -12,4 +12,4 @@ tuple_traits: tuple_traits.cpp
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
 clean:
-	del /f *.exe
+	rm -rf *.exe

@@ -11,7 +11,7 @@ namespace prime {
     struct sieve_flags {
 
         static constexpr std::size_t size = n;
-        bool flags[size/2];
+        bool flags[size/2]{};
 
         constexpr sieve_flags() {
 
@@ -44,7 +44,7 @@ namespace prime {
         constexpr sieve_flags<n> flags{};
         constexpr std::size_t Size = flags.get_size();
 
-        int P[Size];
+        int P[Size]{};
         int *p = P;
         (*p++) = 2;
         for (std::size_t i = 0; i < n/2; ++i) {
@@ -111,7 +111,7 @@ namespace prime {
         }
 
         std::size_t A[7] = {2, 3, 5, 7, 11, 13, 17};
-        std::size_t As = 1;
+        std::size_t As = 0;
 
         if (n < 1373653ULL) {
             As = 2;
@@ -135,12 +135,12 @@ namespace prime {
             ++s;
             d >>= 1;
         }
-        return std::all_of(
-            A,
-            A+As,
-            [=](std::size_t a) {
-                return miller_rabin_core(n, a, s, d);
-            });
+        for (std::size_t Ass = 0; Ass < As; ++Ass) {
+            if (!miller_rabin_core(n, A[Ass], s, d)) {
+                return false;
+            }
+            return true;
+        }
     }
 }
 
