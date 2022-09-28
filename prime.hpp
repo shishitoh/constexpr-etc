@@ -86,7 +86,7 @@ namespace prime {
         return ret;
     }
 
-    /* n = 2^s*dを満たす */
+    /* n-1 = 2^s*dを満たす */
     constexpr bool miller_rabin_core(std::size_t n, std::size_t a, std::size_t s, std::size_t d) noexcept {
 
         std::size_t y = modpow(a, d, n);
